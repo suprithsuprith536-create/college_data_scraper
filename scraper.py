@@ -1,40 +1,47 @@
-import requests
-from bs4 import BeautifulSoup
-import urllib3
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+import time
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-URL = "https://www.nirfindia.org/2023/EngineeringRanking.html"
-
-def get_college_data():
-    response = requests.get(
-        URL,
-        headers={"User-Agent": "Mozilla/5.0"},
-        verify=False
-    )
+def get_driver():
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     
-    soup = BeautifulSoup(response.text, "html.parser")
+    driver = webdriver.Chrome(options=options)
+    return driver
 
-    table = soup.find("table")
-    
-    if not table:
-        print("❌ Table not found (site uses JavaScript)")
-        return []
 
-    rows = table.find_all("tr")[1:]
+def scrape_nirf():
+    url = "https://www.nirfindia.org/2023/EngineeringRanking.html"
+    driver = get_driver()
+    driver.get(url)
 
-    colleges = []
+    time.sleep(5)  # allow JS to load
 
-    for row in rows:
-        cols = row.find_all("td")
+    rows = driver.find_elements(By.XPATH, "//table//tr")
+
+    data = []
+
+    for row in rows[1:]:
+        cols = row.find_elements(By.TAG_NAME, "td")
         if len(cols) < 2:
             continue
 
-        rank = cols[0].text.strip()
-        name = cols[1].text.strip()
+        rank = cols[0].text
+        name = cols[1].text
 
-        colleges.append([
-            name, "NA", "NA", rank, "NIRF 2023", "NA", "NA", "NA"
-        ])
+        data.append({
+            "College Name": name,
+            "NAAC": "NA",
+            "NBA": "NA",
+            "NIRF": rank,
+            "Other Rankings": "NIRF 2023",
+            "Year of Foundation": "NA",
+            "Autonomous/University/VTU": "NA",
+            "Type": "NA"
+        })
 
-    return colleges
+    driver.quit()
+    return data
