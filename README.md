@@ -1,13 +1,12 @@
-# College Data Scraper 🎓
-
-This project scrapes college rankings (NIRF) and stores them in CSV format.
+# 🎓 College Data Pipeline (NIRF Scraper)
 
 ## Features
-- Scrapes NIRF Engineering colleges
-- Saves data to CSV
-- Easy to extend for NAAC, NBA, etc.
+- Scrapes NIRF ranking using Selenium (JS-supported)
+- Displays data in Streamlit UI
+- Download as CSV
 
-## Installation
+## Run Locally
 
 ```bash
 pip install -r requirements.txt
+streamlit run app.py
