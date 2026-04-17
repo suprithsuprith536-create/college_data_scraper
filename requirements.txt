@@ -1,4 +1,8 @@
 streamlit
-selenium
 pandas
-webdriver-manager
+requests
+beautifulsoup4
+pdfplumber
+sentence-transformers
+faiss-cpu
+numpy
