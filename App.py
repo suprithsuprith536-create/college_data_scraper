@@ -1,24 +1,16 @@
 import streamlit as st
-import pandas as pd
-from scraper import scrape_nirf
+from pipeline import run_pipeline
 
-st.title("🎓 College Data Scraper")
+st.title("🎓 College RAG Data Pipeline")
 
-if st.button("Fetch College Data"):
-    with st.spinner("Scraping data..."):
-        data = scrape_nirf()
-        
-        if not data:
-            st.error("Failed to fetch data")
-        else:
-            df = pd.DataFrame(data)
-            st.dataframe(df)
+uploaded_file = st.file_uploader("Upload Input CSV", type=["csv"])
 
-            csv = df.to_csv(index=False).encode("utf-8")
+if uploaded_file:
+    with open("data/input.csv", "wb") as f:
+        f.write(uploaded_file.read())
 
-            st.download_button(
-                label="📥 Download CSV",
-                data=csv,
-                file_name="colleges.csv",
-                mime="text/csv"
-            )
+    if st.button("Run Pipeline"):
+        run_pipeline("data/input.csv", "data/output.csv")
+
+        with open("data/output.csv", "rb") as f:
+            st.download_button("Download Output CSV", f, "output.csv")
